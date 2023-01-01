@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:taskeu/widgets/ExText.dart';
+import 'package:taskeu/screens/createTaskScreen.dart';
+import 'package:taskeu/widgets/extended/exText.dart';
 import 'package:path/path.dart' as path;
+import 'package:taskeu/widgets/taskSchedule.dart';
 
 import '../models/todo.dart';
 
@@ -28,17 +30,19 @@ class _HomeScreenState extends State<HomeScreen> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
-              children: <Widget>[
-                const WelcomingComp(),
-                SearchBar(
-                  searchTodo: () {},
-                  controller: searchBarController,
-                ),
+              children: const <Widget>[
+                WelcomingComp(),
+                // SearchBar(
+                //   searchTodo: () {},
+                //   controller: searchBarController,
+                // ),
+                TaskSchedule(),
               ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: const CreateScheduleButton(),
     );
   }
 }
@@ -212,4 +216,62 @@ class _SearchBarState extends State<SearchBar> {
       ),
     );
   }
+}
+
+class CreateScheduleButton extends StatelessWidget
+    implements PreferredSizeWidget {
+  const CreateScheduleButton({super.key});
+
+  void showTaskCreationScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TaskCreationScreen(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextButton(
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.black87),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+            onPressed: () => showTaskCreationScreen(context),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              child: ExText(
+                text: 'Create Schedule',
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => const Size.fromHeight(10);
 }

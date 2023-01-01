@@ -8,35 +8,38 @@ import 'package:path/path.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // final database = openDatabase(
-  //   join(
-  //     await getDatabasesPath(),
-  //     'official_taskeu_2.db',
-  //   ),
-  //   onCreate: (db, version) async {
-  //     await db.execute("""
-  //       CREATE TABLE user (
-  //         id INTEGER PRIMARY KEY,
-  //         firstName TEXT,
-  //         middleName TEXT,
-  //         lastName TEXT,
-  //         username TEXT
-  //       );
-  //     """);
-  //     await db.execute("""
-  //       CREATE TABLE todo (
-  //         id INTEGER PRIMARY KEY,
-  //         title TEXT,
-  //         date INTEGER,
-  //         start TEXT,
-  //         end TEXT,
-  //         task TEXT,
-  //         status TEXT
-  //       );
-  //     """);
-  //   },
-  //   version: 1,
-  // );
+  final database = openDatabase(
+    join(
+      await getDatabasesPath(),
+      'official_taskeu_2.db',
+    ),
+    onCreate: (db, version) async {
+      await db.execute("""
+        CREATE TABLE user (
+          id INTEGER PRIMARY KEY,
+          firstName TEXT,
+          middleName TEXT,
+          lastName TEXT,
+          username TEXT
+        );
+      """);
+      print('Created User Table');
+      await db.execute("""
+        CREATE TABLE todo (
+          id INTEGER PRIMARY KEY,
+          title TEXT,
+          date INTEGER,
+          start TEXT,
+          end TEXT,
+          task TEXT,
+          status TEXT
+        );
+      """);
+      print('Created Todo Table');
+      await db.close();
+    },
+    version: 1,
+  );
   runApp(const MyApp());
 }
 

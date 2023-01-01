@@ -6,7 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:taskeu/screens/createUserScreen.dart';
 import 'package:taskeu/screens/homeScreen.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:taskeu/widgets/ExText.dart';
+import 'package:taskeu/widgets/extended/exText.dart';
 import 'package:path/path.dart' as path;
 
 class SplashScreen extends StatefulWidget {

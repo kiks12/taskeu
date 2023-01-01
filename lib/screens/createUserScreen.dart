@@ -4,7 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:taskeu/models/user.dart';
 import 'package:taskeu/screens/splashScreen.dart';
-import 'package:taskeu/widgets/ExText.dart';
+import 'package:taskeu/widgets/extended/exText.dart';
 
 class UserCreationScreen extends StatefulWidget {
   const UserCreationScreen({super.key});
