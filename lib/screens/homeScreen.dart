@@ -3,6 +3,8 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:taskeu/screens/createTaskScreen.dart';
+import 'package:taskeu/utils/date.dart';
+import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
 import 'package:path/path.dart' as path;
 import 'package:taskeu/widgets/taskSchedule.dart';
@@ -17,29 +19,63 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Todo> todos = [];
+  List<Todo> todos = [
+    const Todo(
+      id: 0,
+      title: 'Title 1',
+      date: 1672675200000,
+      start: '7:00',
+      end: '8:00',
+      task: 'Create Blah',
+      status: 'Scheduled',
+    ),
+    const Todo(
+      id: 1,
+      title: 'Title 2',
+      date: 1672675200000,
+      start: '10:00',
+      end: '12:00',
+      task: 'Create Blah',
+      status: 'Scheduled',
+    ),
+    const Todo(
+      id: 1,
+      title: 'Lunch',
+      date: 1672675200000,
+      start: '12:00',
+      end: '13:00',
+      task: 'Eat Lunch',
+      status: 'Scheduled',
+    ),
+  ];
   final searchBarController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    todos = TaskUtils(todos: todos).todos;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: const Header(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: const <Widget>[
-                WelcomingComp(),
-                // SearchBar(
-                //   searchTodo: () {},
-                //   controller: searchBarController,
-                // ),
-                TaskSchedule(),
-              ],
-            ),
-          ),
+        child: ListView.builder(
+          itemCount: 3,
+          itemBuilder: (context, index) {
+            if (index == 0) return const WelcomingComp();
+
+            if (index == 1) {
+              return SearchBar(
+                searchTodo: () {},
+                controller: searchBarController,
+              );
+            }
+
+            return TaskSchedule(todos: todos);
+          },
         ),
       ),
       bottomNavigationBar: const CreateScheduleButton(),
@@ -218,9 +254,24 @@ class _SearchBarState extends State<SearchBar> {
   }
 }
 
-class CreateScheduleButton extends StatelessWidget
+class CreateScheduleButton extends StatefulWidget
     implements PreferredSizeWidget {
   const CreateScheduleButton({super.key});
+
+  @override
+  State<CreateScheduleButton> createState() => _CreateScheduleButtonState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(100);
+}
+
+class _CreateScheduleButtonState extends State<CreateScheduleButton> {
+  DateTime date = Date(date: DateTime.now()).date.add(const Duration(days: 1));
+
+  void changeDate(DateTime newDate) {
+    date = Date(date: newDate).date;
+    setState(() {});
+  }
 
   void showTaskCreationScreen(BuildContext context) {
     Navigator.push(
