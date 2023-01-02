@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:taskeu/models/todo.dart';
+import 'package:taskeu/screens/createTaskScreen.dart';
 import 'package:taskeu/utils/date.dart';
+import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/dateToday.dart';
 import 'package:taskeu/widgets/sevenDatesScroll.dart';
+import 'package:taskeu/widgets/task.dart';
 import 'package:taskeu/widgets/tasks.dart';
 
 class TaskSchedule extends StatefulWidget {
-  const TaskSchedule({super.key});
+  const TaskSchedule({
+    super.key,
+    required this.todos,
+  });
+
+  final List<Todo> todos;
 
   @override
   State<TaskSchedule> createState() => _TaskScheduleState();
@@ -57,21 +66,31 @@ class _TaskScheduleState extends State<TaskSchedule> {
     createSevenDaysList();
   }
 
+  List<Widget> getList() {
+    List<Widget> wids = [];
+    wids.add(DateToday(now: now));
+    wids.add(
+      SevenDatesScroll(
+        dates: sevenDays,
+        now: now,
+        changeDate: changeDate,
+      ),
+    );
+    for (var element in TaskUtils(todos: widget.todos).todos) {
+      wids.add(Task(task: element));
+    }
+    return wids;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          DateToday(now: now),
-          SevenDatesScroll(
-            dates: sevenDays,
-            now: now,
-            changeDate: changeDate,
-          ),
-          Tasks(day: now.millisecondsSinceEpoch),
-        ],
+    return Flexible(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: getList(),
+        ),
       ),
     );
   }
