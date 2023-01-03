@@ -21,8 +21,44 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Todo> todos = [];
   final searchBarController = TextEditingController();
-  DateTime now = Date(date: DateTime.now()).date;
   Database? db;
+  List<DateTime> sevenDays = [];
+  DateTime now = Date(date: DateTime.now()).date;
+
+  Future<void> getThreeDaysBeforeToday() async {
+    for (int i = 3; i >= 1; i--) {
+      DateTime threeDay = now.subtract(Duration(days: i));
+      Date threeDayNormalized = Date(date: threeDay);
+      sevenDays.add(threeDayNormalized.date);
+    }
+  }
+
+  Future<void> addDateTodayToSevenDayList() async {
+    sevenDays.add(now);
+  }
+
+  Future<void> getThreeFaysAfterToday() async {
+    for (int i = 1; i <= 3; i++) {
+      DateTime threeDay = now.add(Duration(days: i));
+      Date threeDayNormalized = Date(date: threeDay);
+      sevenDays.add(threeDayNormalized.date);
+    }
+  }
+
+  Future<void> createSevenDaysList() async {
+    await getThreeDaysBeforeToday();
+    await addDateTodayToSevenDayList();
+    await getThreeFaysAfterToday();
+    setState(() {});
+  }
+
+  void changeDate(DateTime date) async {
+    now = date;
+    setState(() {});
+    sevenDays = [];
+    createSevenDaysList();
+    await openDB();
+  }
 
   Future<void> openDB() async {
     db = await openDatabase(
@@ -49,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    createSevenDaysList();
     openDB();
     setState(() {});
   }
@@ -70,7 +107,12 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
 
-            return TaskSchedule(todos: todos);
+            return TaskSchedule(
+              todos: todos,
+              changeDate: changeDate,
+              dates: sevenDays,
+              now: now,
+            );
           },
         ),
       ),
