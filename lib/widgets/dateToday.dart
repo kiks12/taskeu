@@ -4,11 +4,21 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
 
-class DateToday extends StatelessWidget {
-  const DateToday({super.key, required this.now});
+class DateToday extends StatefulWidget {
+  const DateToday({
+    super.key,
+    required this.now,
+    required this.chooseDate,
+  });
 
+  final void Function() chooseDate;
   final DateTime now;
 
+  @override
+  State<DateToday> createState() => _DateTodayState();
+}
+
+class _DateTodayState extends State<DateToday> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +31,7 @@ class DateToday extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ExText(
-                text: DateFormat("MMMM dd").format(now),
+                text: DateFormat("MMMM dd").format(widget.now),
                 size: 18,
                 weight: FontWeight.w600,
               ),
@@ -32,7 +42,7 @@ class DateToday extends StatelessWidget {
             ],
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: widget.chooseDate,
             child: const CircleAvatar(
               maxRadius: 23,
               backgroundColor: Colors.black87,

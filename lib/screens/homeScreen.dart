@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:taskeu/screens/createTaskScreen.dart';
+import 'package:taskeu/screens/createScheduleScreen.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
@@ -23,23 +23,23 @@ class _HomeScreenState extends State<HomeScreen> {
   final searchBarController = TextEditingController();
   Database? db;
   List<DateTime> sevenDays = [];
-  DateTime now = Date(date: DateTime.now()).date;
+  DateTime? now = Date(date: DateTime.now()).date;
 
   Future<void> getThreeDaysBeforeToday() async {
     for (int i = 3; i >= 1; i--) {
-      DateTime threeDay = now.subtract(Duration(days: i));
+      DateTime threeDay = now!.subtract(Duration(days: i));
       Date threeDayNormalized = Date(date: threeDay);
       sevenDays.add(threeDayNormalized.date);
     }
   }
 
   Future<void> addDateTodayToSevenDayList() async {
-    sevenDays.add(now);
+    sevenDays.add(now!);
   }
 
   Future<void> getThreeFaysAfterToday() async {
     for (int i = 1; i <= 3; i++) {
-      DateTime threeDay = now.add(Duration(days: i));
+      DateTime threeDay = now!.add(Duration(days: i));
       Date threeDayNormalized = Date(date: threeDay);
       sevenDays.add(threeDayNormalized.date);
     }
@@ -49,6 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
     await getThreeDaysBeforeToday();
     await addDateTodayToSevenDayList();
     await getThreeFaysAfterToday();
+    setState(() {});
+  }
+
+  void chooseDate() async {
+    now = await showDatePicker(
+      context: context,
+      initialDate: now!,
+      firstDate: DateTime(1800),
+      lastDate: DateTime(2050),
+    );
     setState(() {});
   }
 
@@ -66,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     final List<dynamic> tasks = await db!.rawQuery(
-        'SELECT * FROM todo WHERE date=${now.millisecondsSinceEpoch} ORDER BY start ASC');
+        'SELECT * FROM todo WHERE date=${now!.millisecondsSinceEpoch} ORDER BY start ASC');
     todos = tasks.map(((e) {
       return Todo(
         id: e['id'],
@@ -110,8 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
             return TaskSchedule(
               todos: todos,
               changeDate: changeDate,
+              chooseDate: chooseDate,
               dates: sevenDays,
-              now: now,
+              now: now!,
             );
           },
         ),

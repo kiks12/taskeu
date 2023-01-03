@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:taskeu/models/todo.dart';
-import 'package:taskeu/screens/createTaskScreen.dart';
+import 'package:taskeu/screens/createScheduleScreen.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/dateToday.dart';
@@ -18,12 +18,14 @@ class TaskSchedule extends StatefulWidget {
     required this.dates,
     required this.now,
     required this.changeDate,
+    required this.chooseDate,
   });
 
   final List<Todo> todos;
   final List<DateTime> dates;
   final DateTime now;
   final void Function(DateTime date) changeDate;
+  final void Function() chooseDate;
 
   @override
   State<TaskSchedule> createState() => _TaskScheduleState();
@@ -75,7 +77,10 @@ class _TaskScheduleState extends State<TaskSchedule> {
 
   List<Widget> getList() {
     List<Widget> wids = [];
-    wids.add(DateToday(now: widget.now));
+    wids.add(DateToday(
+      now: widget.now,
+      chooseDate: widget.chooseDate,
+    ));
     wids.add(
       SevenDatesScroll(
         dates: widget.dates,
