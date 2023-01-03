@@ -6,6 +6,7 @@ import 'package:taskeu/screens/createTaskScreen.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/dateToday.dart';
+import 'package:taskeu/widgets/extended/exText.dart';
 import 'package:taskeu/widgets/sevenDatesScroll.dart';
 import 'package:taskeu/widgets/task.dart';
 import 'package:taskeu/widgets/tasks.dart';
@@ -76,22 +77,32 @@ class _TaskScheduleState extends State<TaskSchedule> {
         changeDate: changeDate,
       ),
     );
-    for (var element in TaskUtils(todos: widget.todos).todos) {
-      wids.add(Task(task: element));
+    if (widget.todos.isEmpty) {
+      wids.add(
+        const Center(
+          child: ExText(text: 'No Tasks'),
+        ),
+      );
+    } else {
+      for (var element in TaskUtils(todos: widget.todos).todos) {
+        wids.add(Task(task: element));
+      }
     }
     return wids;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: getList(),
+    return Wrap(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: getList(),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

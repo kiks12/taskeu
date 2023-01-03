@@ -2,10 +2,11 @@ import 'package:taskeu/models/todo.dart';
 
 class TaskUtils {
   final List<Todo> todos;
+  final bool isCreating;
   int firstTime = 0;
   int lastTime = 0;
 
-  TaskUtils({required this.todos}) {
+  TaskUtils({required this.todos, this.isCreating = false}) {
     getFirstAndLastTime();
     fillInFreeTime();
   }
@@ -30,18 +31,20 @@ class TaskUtils {
       }
     }
 
-    for (int i = lastTime; i < 24; i++) {
-      todos.add(
-        Todo(
-          id: 0,
-          title: 'Free',
-          date: 0,
-          start: '$i:00',
-          end: '${i + 1}:00',
-          task: 'Free',
-          status: 'Free',
-        ),
-      );
+    if (!isCreating) {
+      for (int i = lastTime; i < 24; i++) {
+        todos.add(
+          Todo(
+            id: 0,
+            title: 'Free',
+            date: 0,
+            start: '$i:00',
+            end: '${i + 1}:00',
+            task: 'Free',
+            status: 'Free',
+          ),
+        );
+      }
     }
   }
 
