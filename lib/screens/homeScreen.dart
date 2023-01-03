@@ -19,41 +19,37 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Todo> todos = [
-    const Todo(
-      id: 0,
-      title: 'Title 1',
-      date: 1672675200000,
-      start: '7:00',
-      end: '8:00',
-      task: 'Create Blah',
-      status: 'Scheduled',
-    ),
-    const Todo(
-      id: 1,
-      title: 'Title 2',
-      date: 1672675200000,
-      start: '10:00',
-      end: '12:00',
-      task: 'Create Blah',
-      status: 'Scheduled',
-    ),
-    const Todo(
-      id: 1,
-      title: 'Lunch',
-      date: 1672675200000,
-      start: '12:00',
-      end: '13:00',
-      task: 'Eat Lunch',
-      status: 'Scheduled',
-    ),
-  ];
+  List<Todo> todos = [];
   final searchBarController = TextEditingController();
+  DateTime now = Date(date: DateTime.now()).date;
+  Database? db;
+
+  Future<void> openDB() async {
+    db = await openDatabase(
+      path.join(await getDatabasesPath(), 'official_taskeu_2.db'),
+    );
+
+    final List<dynamic> tasks = await db!.rawQuery(
+        'SELECT * FROM todo WHERE date=${now.millisecondsSinceEpoch} ORDER BY start ASC');
+    todos = tasks.map(((e) {
+      return Todo(
+        id: e['id'],
+        title: e['title'],
+        date: e['date'],
+        start: e['start'],
+        end: e['end'],
+        task: e['task'],
+        status: e['status'],
+      );
+    })).toList();
+    todos = TaskUtils(todos: todos).todos;
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
-    todos = TaskUtils(todos: todos).todos;
+    openDB();
     setState(() {});
   }
 
@@ -124,6 +120,7 @@ class WelcomingComp extends StatefulWidget {
 }
 
 class WelcomingCompState extends State<WelcomingComp> {
+  DateTime now = Date(date: DateTime.now()).date;
   String? username;
   String? avaterLetter;
   int? scheduledCount;
@@ -141,8 +138,8 @@ class WelcomingCompState extends State<WelcomingComp> {
   }
 
   Future<void> getScheduledTasks() async {
-    scheduledCount = Sqflite.firstIntValue(await db
-        .rawQuery('SELECT COUNT(*) FROM todo WHERE status="Scheduled"'));
+    scheduledCount = Sqflite.firstIntValue(await db.rawQuery(
+        'SELECT COUNT(*) FROM todo WHERE date >= ${now.millisecondsSinceEpoch}'));
   }
 
   Future<void> getAvatarLetter() async {
