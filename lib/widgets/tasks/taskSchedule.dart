@@ -19,67 +19,30 @@ class TaskSchedule extends StatefulWidget {
     required this.now,
     required this.changeDate,
     required this.chooseDate,
+    required this.tasksCount,
+    required this.resetDate,
   });
 
   final List<Todo> todos;
   final List<DateTime> dates;
   final DateTime now;
+  final int tasksCount;
   final void Function(DateTime date) changeDate;
   final void Function() chooseDate;
+  final void Function() resetDate;
 
   @override
   State<TaskSchedule> createState() => _TaskScheduleState();
 }
 
 class _TaskScheduleState extends State<TaskSchedule> {
-  // List<DateTime> sevenDays = [];
-  // DateTime now = Date(date: DateTime.now()).date;
-
-  // Future<void> getThreeDaysBeforeToday() async {
-  //   for (int i = 3; i >= 1; i--) {
-  //     DateTime threeDay = now.subtract(Duration(days: i));
-  //     Date threeDayNormalized = Date(date: threeDay);
-  //     sevenDays.add(threeDayNormalized.date);
-  //   }
-  // }
-
-  // Future<void> addDateTodayToSevenDayList() async {
-  //   sevenDays.add(now);
-  // }
-
-  // Future<void> getThreeFaysAfterToday() async {
-  //   for (int i = 1; i <= 3; i++) {
-  //     DateTime threeDay = now.add(Duration(days: i));
-  //     Date threeDayNormalized = Date(date: threeDay);
-  //     sevenDays.add(threeDayNormalized.date);
-  //   }
-  // }
-
-  // Future<void> createSevenDaysList() async {
-  //   await getThreeDaysBeforeToday();
-  //   await addDateTodayToSevenDayList();
-  //   await getThreeFaysAfterToday();
-  //   setState(() {});
-  // }
-
-  // void changeDate(DateTime date) {
-  //   now = date;
-  //   setState(() {});
-  //   sevenDays = [];
-  //   createSevenDaysList();
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    // createSevenDaysList();
-  }
-
   List<Widget> getList() {
     List<Widget> wids = [];
     wids.add(DateToday(
+      tasksCount: widget.tasksCount,
       now: widget.now,
       chooseDate: widget.chooseDate,
+      resetDate: widget.resetDate,
     ));
     wids.add(
       SevenDatesScroll(

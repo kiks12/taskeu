@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime? now = Date(date: DateTime.now()).date;
   String username = '';
   int scheduledCount = 0;
+  int tasksCountToday = 0;
 
   Future<void> getThreeDaysBeforeToday() async {
     for (int i = 3; i >= 1; i--) {
@@ -77,12 +78,21 @@ class _HomeScreenState extends State<HomeScreen> {
     await openDB();
   }
 
+  void resetDate() async {
+    now = Date(date: DateTime.now()).date;
+    sevenDays = [];
+    createSevenDaysList();
+    await openDB();
+    setState(() {});
+  }
+
   Future<void> openDB() async {
     db = await openDatabase(
         path.join(await getDatabasesPath(), 'official_taskeu_2.db'));
     await queryTasksOfDate();
     await getUsername();
-    await getCountOfScheduledTasks();
+    await getCountOfScheduledTasksStartingToday();
+    await getCountOfScheduledTasksToday();
   }
 
   Future<void> getUsername() async {
@@ -91,9 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  Future<void> getCountOfScheduledTasks() async {
+  Future<void> getCountOfScheduledTasksStartingToday() async {
     scheduledCount = Sqflite.firstIntValue(await db!.rawQuery(
         "SELECT COUNT(*) FROM todo WHERE date >= ${now!.millisecondsSinceEpoch} AND status='Scheduled'"))!;
+    setState(() {});
+  }
+
+  Future<void> getCountOfScheduledTasksToday() async {
+    tasksCountToday = Sqflite.firstIntValue(await db!.rawQuery(
+        "SELECT COUNT(*) FROM todo WHERE date == ${now!.millisecondsSinceEpoch} AND status='Scheduled'"))!;
     setState(() {});
   }
 
@@ -152,9 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             return TaskSchedule(
+              tasksCount: tasksCountToday,
               todos: todos,
               changeDate: changeDate,
               chooseDate: chooseDate,
+              resetDate: resetDate,
               dates: sevenDays,
               now: now!,
             );

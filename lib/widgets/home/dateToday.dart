@@ -9,10 +9,14 @@ class DateToday extends StatefulWidget {
     super.key,
     required this.now,
     required this.chooseDate,
+    required this.tasksCount,
+    required this.resetDate,
   });
 
   final void Function() chooseDate;
+  final void Function() resetDate;
   final DateTime now;
+  final int tasksCount;
 
   @override
   State<DateToday> createState() => _DateTodayState();
@@ -35,22 +39,40 @@ class _DateTodayState extends State<DateToday> {
                 size: 18,
                 weight: FontWeight.w600,
               ),
-              const ExText(
-                text: '0 tasks Today',
+              ExText(
+                text: '${widget.tasksCount} tasks Today',
                 size: 12,
               ),
             ],
           ),
-          GestureDetector(
-            onTap: widget.chooseDate,
-            child: const CircleAvatar(
-              maxRadius: 23,
-              backgroundColor: Colors.black87,
-              child: Icon(
-                Icons.calendar_month,
-                size: 20,
+          Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: GestureDetector(
+                  onTap: widget.resetDate,
+                  child: const CircleAvatar(
+                    maxRadius: 23,
+                    backgroundColor: Color.fromARGB(255, 236, 236, 236),
+                    child: Icon(
+                      Icons.replay_outlined,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              GestureDetector(
+                onTap: widget.chooseDate,
+                child: const CircleAvatar(
+                  maxRadius: 23,
+                  backgroundColor: Colors.black87,
+                  child: Icon(
+                    Icons.calendar_month,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
