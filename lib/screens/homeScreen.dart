@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:taskeu/main.dart';
 import 'package:taskeu/screens/createScheduleScreen.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
@@ -12,6 +13,10 @@ import 'package:taskeu/widgets/home/searchBar.dart';
 import 'package:taskeu/widgets/home/welcomeComponent.dart';
 import 'package:taskeu/widgets/tasks/taskSchedule.dart';
 import '../models/todo.dart';
+
+const String SCHEDULED_TASK = 'SCHEDULED_TASK';
+const String CANCELLED_TASK = 'CANCELLED_TASK';
+const String COMPLETED_TASK = 'COMPLETED_TASK';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -87,8 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> openDB() async {
-    db = await openDatabase(
-        path.join(await getDatabasesPath(), 'official_taskeu_2.db'));
+    db = await openDatabase(path.join(await getDatabasesPath(), DB_NAME));
     await queryTasksOfDate();
     await getUsername();
     await getCountOfScheduledTasksStartingToday();
@@ -136,6 +140,23 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  void changeTaskStatus(String newStatus, int id) {
+    for (var todo in todos) {
+      if (todo.id == id && todo.status != 'Free') todo.changeStatus(newStatus);
+    }
+    setState(() {});
+  }
+
+  void deleteTask(int id) async {
+    for (var todo in todos) {
+      if (todo.id == id && todo.status != 'Free') {
+        todo.deleteTodo();
+        await openDB();
+      }
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -170,6 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
             return TaskSchedule(
               tasksCount: tasksCountToday,
               todos: todos,
+              changeTaskStatus: changeTaskStatus,
+              deleteTask: deleteTask,
               changeDate: changeDate,
               chooseDate: chooseDate,
               resetDate: resetDate,

@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:taskeu/main.dart';
+import 'package:taskeu/screens/homeScreen.dart';
 
 class Todo {
   final int id;
@@ -8,9 +10,9 @@ class Todo {
   final String start;
   final String end;
   final String task;
-  final String status;
+  String status;
 
-  const Todo({
+  Todo({
     required this.id,
     required this.title,
     required this.date,
@@ -32,12 +34,41 @@ class Todo {
     };
   }
 
-  void insertUserToDB() async {
+  void changeStatus(String newStatus) async {
+    if (newStatus == SCHEDULED_TASK) status = 'Scheduled';
+    if (newStatus == CANCELLED_TASK) status = 'Cancelled';
+    if (newStatus == COMPLETED_TASK) status = 'Completed';
+
     final db = await openDatabase(
-      join(await getDatabasesPath(), 'official_taskeu_2.db'),
+      join(await getDatabasesPath(), DB_NAME),
+    );
+
+    await db.update(
+      'todo',
+      toMap(),
+      where: 'id=$id',
+      conflictAlgorithm: ConflictAlgorithm.fail,
+    );
+
+    await db.close();
+  }
+
+  void insertTodoToDB() async {
+    final db = await openDatabase(
+      join(await getDatabasesPath(), DB_NAME),
     );
 
     await db.insert('todo', toMap(), conflictAlgorithm: ConflictAlgorithm.fail);
+
+    await db.close();
+  }
+
+  void deleteTodo() async {
+    final db = await openDatabase(
+      join(await getDatabasesPath(), DB_NAME),
+    );
+
+    await db.delete('todo', where: 'id=$id');
 
     await db.close();
   }

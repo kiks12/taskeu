@@ -21,6 +21,8 @@ class TaskSchedule extends StatefulWidget {
     required this.chooseDate,
     required this.tasksCount,
     required this.resetDate,
+    required this.changeTaskStatus,
+    required this.deleteTask,
   });
 
   final List<Todo> todos;
@@ -30,6 +32,11 @@ class TaskSchedule extends StatefulWidget {
   final void Function(DateTime date) changeDate;
   final void Function() chooseDate;
   final void Function() resetDate;
+  final void Function(
+    String newStatus,
+    int id,
+  ) changeTaskStatus;
+  final void Function(int id) deleteTask;
 
   @override
   State<TaskSchedule> createState() => _TaskScheduleState();
@@ -59,7 +66,11 @@ class _TaskScheduleState extends State<TaskSchedule> {
       );
     } else {
       for (var element in TaskUtils(todos: widget.todos).todos) {
-        wids.add(Task(task: element));
+        wids.add(Task(
+          task: element,
+          changeTaskStatus: widget.changeTaskStatus,
+          deleteTask: widget.deleteTask,
+        ));
       }
     }
     return wids;

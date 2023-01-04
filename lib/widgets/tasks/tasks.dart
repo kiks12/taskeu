@@ -37,7 +37,11 @@ class _TasksState extends State<Tasks> {
         padding: const EdgeInsets.symmetric(horizontal: 30),
         itemCount: widget.tasks.length,
         itemBuilder: ((context, index) {
-          return Task(task: widget.tasks[index]);
+          return Task(
+            task: widget.tasks[index],
+            changeTaskStatus: (newStatus, id) {},
+            deleteTask: ((id) {}),
+          );
         }),
       ),
     );

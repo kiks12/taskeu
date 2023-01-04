@@ -90,7 +90,7 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
   Future<void> saveSchedule() async {
     for (var todo in todos) {
       if (todo.status == 'Free') continue;
-      todo.insertUserToDB();
+      todo.insertTodoToDB();
     }
     Navigator.pop(context);
   }
