@@ -8,8 +8,8 @@ import 'package:taskeu/models/todo.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
-import 'package:taskeu/widgets/task.dart';
-import 'package:taskeu/widgets/tasks.dart';
+import 'package:taskeu/widgets/tasks/task.dart';
+import 'package:taskeu/widgets/tasks/tasks.dart';
 
 import 'package:path/path.dart' as path;
 
