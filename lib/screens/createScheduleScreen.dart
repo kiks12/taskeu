@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:taskeu/main.dart';
 import 'package:taskeu/models/todo.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
@@ -50,7 +51,10 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
 
   Future<void> getID() async {
     final Database db = await openDatabase(
-      path.join(await getDatabasesPath(), 'official_taskeu_2.db'),
+      path.join(
+        await getDatabasesPath(),
+        DB_NAME,
+      ),
     );
 
     currentID =
@@ -58,10 +62,6 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
             as int;
     setState(() {});
   }
-
-  // void normalizeTime(TimeOfDay time) {
-  // print(TimeOfDay(hour: 13, minute: 0));
-  // }
 
   void addTask() {
     if (formKey.currentState!.validate()) {
