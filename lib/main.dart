@@ -5,13 +5,15 @@ import 'package:taskeu/screens/homeScreen.dart';
 import 'package:taskeu/screens/splashScreen.dart';
 import 'package:path/path.dart';
 
+const String DB_NAME = 'official_taskeu_2.db';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final database = openDatabase(
     join(
       await getDatabasesPath(),
-      'official_taskeu_2.db',
+      DB_NAME,
     ),
     onCreate: (db, version) async {
       await db.execute("""
