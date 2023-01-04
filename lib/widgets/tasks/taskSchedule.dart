@@ -5,11 +5,11 @@ import 'package:taskeu/models/todo.dart';
 import 'package:taskeu/screens/createScheduleScreen.dart';
 import 'package:taskeu/utils/date.dart';
 import 'package:taskeu/utils/taskUtils.dart';
-import 'package:taskeu/widgets/dateToday.dart';
+import 'package:taskeu/widgets/home/dateToday.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
-import 'package:taskeu/widgets/sevenDatesScroll.dart';
-import 'package:taskeu/widgets/task.dart';
-import 'package:taskeu/widgets/tasks.dart';
+import 'package:taskeu/widgets/home/sevenDatesScroll.dart';
+import 'package:taskeu/widgets/tasks/task.dart';
+import 'package:taskeu/widgets/tasks/tasks.dart';
 
 class TaskSchedule extends StatefulWidget {
   const TaskSchedule({

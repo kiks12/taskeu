@@ -3,7 +3,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:taskeu/models/todo.dart';
 import 'package:taskeu/widgets/extended/exText.dart';
-import 'package:taskeu/widgets/task.dart';
+import 'package:taskeu/widgets/tasks/task.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key, required this.tasks});

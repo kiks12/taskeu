@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:taskeu/widgets/home/createScheduleButton.dart';
 import 'package:taskeu/widgets/home/searchBar.dart';
 import 'package:taskeu/widgets/home/welcomeComponent.dart';
-import 'package:taskeu/widgets/taskSchedule.dart';
+import 'package:taskeu/widgets/tasks/taskSchedule.dart';
 import '../models/todo.dart';
 
 class HomeScreen extends StatefulWidget {
