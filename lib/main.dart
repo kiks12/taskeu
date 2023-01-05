@@ -56,13 +56,13 @@ void main() async {
 
     // If enabled it will post a notification whenever
     // the task is running. Handy for debugging tasks
-    isInDebugMode: true,
+    // isInDebugMode: true,
   );
   // Periodic task registration
   Workmanager().registerPeriodicTask(
     "1",
     "simplePeriodicTask",
-    frequency: const Duration(minutes: 15),
+    frequency: const Duration(hours: 1),
   );
 
   await getNextTask();
