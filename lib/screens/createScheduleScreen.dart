@@ -76,7 +76,9 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
           title: titleController.text,
           date: initialDate.millisecondsSinceEpoch,
           start: selectedStartTime!.format(context),
-          end: selectedEndTime!.format(context),
+          end: (selectedEndTime!.hour == 0)
+              ? "24:00"
+              : selectedEndTime!.format(context),
           task: descriptionController.text,
           status: 'Scheduled',
         ),
