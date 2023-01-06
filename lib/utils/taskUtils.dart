@@ -11,10 +11,25 @@ class TaskUtils {
     fillInFreeTime();
   }
 
+  int processEndOfFirstTask(Todo todo) {
+    if (todo.end.toString().length == 3 || todo.end.toString().length == 2) {
+      return int.parse(todo.end.toString()[0]);
+    }
+    return int.parse(todo.end.toString().substring(0, 2));
+  }
+
+  int processStartOfSecondTask(Todo todo) {
+    if (todo.start.toString().length == 3 ||
+        todo.start.toString().length == 2) {
+      return int.parse(todo.start.toString()[0]);
+    }
+    return int.parse(todo.start.toString().substring(0, 2));
+  }
+
   void fillInFreeTime() {
     for (int i = 0; i < todos.length - 1; i++) {
-      int endOfFirstTask = int.parse(todos[i].end.split(":")[0]);
-      int startOfSecondTask = int.parse(todos[i + 1].start.split(":")[0]);
+      int endOfFirstTask = processEndOfFirstTask(todos[i]);
+      int startOfSecondTask = processStartOfSecondTask(todos[i + 1]);
       if (endOfFirstTask != startOfSecondTask) {
         todos.insert(
           i + 1,
@@ -38,8 +53,8 @@ class TaskUtils {
             id: 0,
             title: 'Free',
             date: 0,
-            start: '$i:00',
-            end: '${i + 1}:00',
+            start: int.parse('${i}00'),
+            end: int.parse('${i + 1}00'),
             task: 'Free',
             status: 'Free',
           ),
@@ -48,10 +63,25 @@ class TaskUtils {
     }
   }
 
+  int processFirstTime(Todo todo) {
+    if (todo.start.toString().length == 3 ||
+        todo.start.toString().length == 2) {
+      return int.parse(todo.start.toString()[0]);
+    }
+    return int.parse(todo.start.toString().substring(0, 2));
+  }
+
+  int processLastTime(Todo todo) {
+    if (todo.end.toString().length == 3 || todo.end.toString().length == 2) {
+      return int.parse(todo.end.toString()[0]);
+    }
+    return int.parse(todo.end.toString().substring(0, 2));
+  }
+
   void getFirstAndLastTime() {
     Todo first = todos.first;
     Todo last = todos.last;
-    firstTime = int.parse(first.start.split(":")[0]);
-    lastTime = int.parse(last.end.split(":")[0]);
+    firstTime = processFirstTime(first);
+    lastTime = processLastTime(last);
   }
 }

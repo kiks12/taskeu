@@ -3,12 +3,38 @@ import 'package:path/path.dart';
 import 'package:taskeu/main.dart';
 import 'package:taskeu/screens/homeScreen.dart';
 
+class Todos {
+  final List<Todo> todos;
+
+  const Todos({required this.todos});
+
+  Future insertTodosToDB() async {
+    Database db = await openDatabase(
+      join(await getDatabasesPath(), DB_NAME),
+    );
+
+    Batch batch = db.batch();
+    for (Todo todo in todos) {
+      if (todo.status != 'Free') {
+        batch.insert(
+          'todo',
+          todo.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.fail,
+        );
+        print(todo);
+      }
+    }
+    await batch.commit(noResult: true);
+    await db.close();
+  }
+}
+
 class Todo {
   final int id;
   final String title;
   final int date;
-  final String start;
-  final String end;
+  final int start;
+  final int end;
   final String task;
   String status;
 
@@ -24,7 +50,6 @@ class Todo {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'title': title,
       'date': date,
       'start': start,

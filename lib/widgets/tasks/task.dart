@@ -50,34 +50,30 @@ class _TaskState extends State<Task> {
     }
   }
 
+  int processFirstTime() {
+    if (widget.task.start.toString().length == 3 ||
+        widget.task.start.toString().length == 2) {
+      return int.parse(widget.task.start.toString()[0]);
+    }
+    return int.parse(widget.task.start.toString().substring(0, 2));
+  }
+
+  int processLastTime() {
+    if (widget.task.end.toString().length == 3 ||
+        widget.task.end.toString().length == 2) {
+      return int.parse(widget.task.end.toString()[0]);
+    }
+    return int.parse(widget.task.end.toString().substring(0, 2));
+  }
+
   @override
   void initState() {
     super.initState();
-    firstTime = int.parse(widget.task.start.split(':')[0]);
-    lastTime = int.parse(widget.task.end.split(':')[0]);
+    firstTime = processFirstTime();
+    lastTime = processLastTime();
     initializeAllTime();
     setState(() {});
   }
-
-  // void showAddTaskModal() async {
-  //   return await showModalBottomSheet(
-  //     isScrollControlled: true,
-  //     context: context,
-  //     shape: const RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-  //     builder: ((context) {
-  //       return AddTaskModal(
-  //         selectedStartTime: selectedStartTime,
-  //         selectedEndTime: selectedEndTime,
-  //         formKey: formKey,
-  //         titleController: titleController,
-  //         descriptionController: descriptionController,
-  //         addTask: addTask,
-  //         handleTimeButtonClick: handleTimeButtonClick,
-  //       );
-  //     }),
-  //   );
-  // }
 
   Color getColor() {
     if (widget.task.status == 'Cancelled') return Colors.red;
