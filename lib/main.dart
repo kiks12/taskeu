@@ -17,6 +17,11 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()!
+      .requestPermission();
+
   final database = openDatabase(
     join(
       await getDatabasesPath(),
@@ -35,11 +40,11 @@ void main() async {
       print('Created User Table');
       await db.execute("""
         CREATE TABLE todo (
-          id INTEGER PRIMARY KEY,
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
           date INTEGER,
-          start TEXT,
-          end TEXT,
+          start INTEGER,
+          end INTEGER,
           task TEXT,
           status TEXT
         );
@@ -56,16 +61,20 @@ void main() async {
 
     // If enabled it will post a notification whenever
     // the task is running. Handy for debugging tasks
-    // isInDebugMode: true,
+    isInDebugMode: true,
   );
   // Periodic task registration
   Workmanager().registerPeriodicTask(
     "1",
     "simplePeriodicTask",
-    frequency: const Duration(hours: 1),
+    frequency: const Duration(minutes: 15),
   );
 
-  await getNextTask();
+  // List<Todo> todos = await getNextTask();
+
+  // for (Todo todo in todos) {
+  //   showNotificationWithDefaultSound(flutterLocalNotificationsPlugin, todo);
+  // }
 
   runApp(const MyApp());
 }
@@ -73,9 +82,6 @@ void main() async {
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     List<Todo> tasks = await getNextTask();
-    // initialise the plugin of flutterlocalnotifications.
-    FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
-
     // // app_icon needs to be a added as a drawable
     // // resource to the Android head project.
     const AndroidInitializationSettings android =
@@ -85,11 +91,14 @@ void callbackDispatcher() {
     const InitializationSettings settings =
         InitializationSettings(android: android);
 
-    flip.initialize(settings);
+    flutterLocalNotificationsPlugin.initialize(settings);
 
-    tasks.forEach(
-      (element) => showNotificationWithDefaultSound(flip, element),
-    );
+    for (Todo todo in tasks) {
+      showNotificationWithDefaultSound(
+        flutterLocalNotificationsPlugin,
+        todo,
+      );
+    }
     // showNotificationWithDefaultSound(flip);
     // print('Notif');
     return Future.value(true);
@@ -99,21 +108,28 @@ void callbackDispatcher() {
 Future<List<Todo>> getNextTask() async {
   DateTime dateToday = Date(date: DateTime.now()).date;
   TimeOfDay n = TimeOfDay.now();
-  TimeOfDay now = TimeOfDay.now().replacing(hour: n.hour - 1);
+  TimeOfDay now = TimeOfDay.now().replacing(minute: n.minute - 15);
 
-  String nowString = '${now.hour}:00';
-  if (now.hour == -1) nowString = '24:00';
+  int nowInt = int.parse('${now.hour}${now.minute}');
+  if (now.minute.toString().length == 1) {
+    nowInt = int.parse('${now.hour}0${now.minute}');
+  }
+  if (now.hour == -1) nowInt = 2400;
 
-  TimeOfDay oneHourAfterNow = now.replacing(hour: now.hour - 1 + 1);
-  String oneHourAfterNowString = '${oneHourAfterNow.hour + 1}:00';
-  if (oneHourAfterNow.hour == 23) oneHourAfterNowString = '24:00';
+  TimeOfDay oneHourAfterNow = now.replacing(hour: now.hour + 1);
+  int oneHourAfterNowInt =
+      int.parse('${oneHourAfterNow.hour + 1}${oneHourAfterNow.minute}');
+  if (oneHourAfterNow.minute.toString().length == 1) {
+    nowInt = int.parse('${now.hour}0${now.minute}');
+  }
+  if (oneHourAfterNow.hour == 23) oneHourAfterNowInt = 2400;
 
   Database db = await openDatabase(
     join(await getDatabasesPath(), DB_NAME),
   );
 
   List<Map<String, Object?>> list = await db.rawQuery(
-      'SELECT * FROM todo WHERE date=${dateToday.millisecondsSinceEpoch} AND start >= "$nowString" AND end <= "$oneHourAfterNowString" AND status="Scheduled"');
+      'SELECT * FROM todo WHERE date=${dateToday.millisecondsSinceEpoch} AND start >= $nowInt AND end <= $oneHourAfterNowInt AND status="Scheduled"');
 
   List<Todo> listOfTodo = list.map(
     (e) {
@@ -121,8 +137,8 @@ Future<List<Todo>> getNextTask() async {
         id: e['id'] as int,
         title: e['title'] as String,
         date: e['date'] as int,
-        start: e['start'] as String,
-        end: e['end'] as String,
+        start: e['start'] as int,
+        end: e['end'] as int,
         task: e['task'] as String,
         status: e['task'] as String,
       );
@@ -145,7 +161,7 @@ Future showNotificationWithDefaultSound(flip, Todo task) async {
     android: androidPlatformChannelSpecifics,
   );
   await flip.show(
-    0,
+    1,
     'Taskeu',
     '${task.title} at ${task.start}',
     platformChannelSpecifics,

@@ -40,13 +40,11 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  int currentID = 0;
 
   @override
   void initState() {
     super.initState();
     if (todos.isNotEmpty) normalizeTodo();
-    getID();
   }
 
   void normalizeTodo() {
@@ -54,46 +52,60 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
     setState(() {});
   }
 
-  Future<void> getID() async {
-    final Database db = await openDatabase(
-      path.join(
-        await getDatabasesPath(),
-        DB_NAME,
-      ),
-    );
+  void setSelectedStartTimeToEndTime() {
+    selectedStartTime = selectedEndTime;
+    selectedEndTime = TimeOfDay(hour: selectedStartTime!.hour + 1, minute: 0);
+  }
 
-    currentID =
-        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM todo'))
-            as int;
-    setState(() {});
+  void clearTextFormFields() {
+    titleController.clear();
+    descriptionController.clear();
+  }
+
+  int createStartTime() {
+    if (selectedStartTime!.minute.toString().length == 1) {
+      return int.parse(
+          "${selectedStartTime!.hour}0${selectedStartTime!.minute}");
+    }
+    return int.parse("${selectedStartTime!.hour}${selectedStartTime!.minute}");
+  }
+
+  int createEndTime() {
+    if (selectedEndTime!.hour == 0) {
+      if (selectedEndTime!.minute.toString().length == 1) {
+        return int.parse("${selectedEndTime!.hour}0${selectedEndTime!.minute}");
+      }
+      return int.parse("24${selectedEndTime!.minute}");
+    }
+
+    if (selectedEndTime!.minute.toString().length == 1) {
+      return int.parse("${selectedEndTime!.hour}0${selectedEndTime!.minute}");
+    }
+    return int.parse("${selectedEndTime!.hour}${selectedEndTime!.minute}");
   }
 
   void addTask() {
     if (formKey.currentState!.validate()) {
       todos.add(
         Todo(
-          id: currentID,
+          id: 0,
           title: titleController.text,
           date: initialDate.millisecondsSinceEpoch,
-          start: selectedStartTime!.format(context),
-          end: (selectedEndTime!.hour == 0)
-              ? "24:00"
-              : selectedEndTime!.format(context),
+          start: createStartTime(),
+          end: createEndTime(),
           task: descriptionController.text,
           status: 'Scheduled',
         ),
       );
-      currentID++;
+      setSelectedStartTimeToEndTime();
+      clearTextFormFields();
       normalizeTodo();
       Navigator.pop(context);
     }
   }
 
   Future<void> saveSchedule() async {
-    for (var todo in todos) {
-      if (todo.status == 'Free') continue;
-      todo.insertTodoToDB();
-    }
+    Todos(todos: todos).insertTodosToDB();
     Navigator.pop(context);
   }
 

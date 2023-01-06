@@ -36,8 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int scheduledCount = 0;
   int tasksCountToday = 0;
 
-  // FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
-
   Future<void> getThreeDaysBeforeToday() async {
     for (int i = 3; i >= 1; i--) {
       DateTime threeDay = now!.subtract(Duration(days: i));
@@ -160,36 +158,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Future showNotificationWithDefaultSound(flip) async {
-  //   const AndroidNotificationDetails androidPlatformChannelSpecifics =
-  //       AndroidNotificationDetails(
-  //     '0',
-  //     'Taskeu',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );
-
-  //   const NotificationDetails platformChannelSpecifics = NotificationDetails(
-  //     android: androidPlatformChannelSpecifics,
-  //   );
-  //   await flip.show(
-  //     0,
-  //     'Taskeu',
-  //     'Breakfast at 7:00',
-  //     platformChannelSpecifics,
-  //     payload: 'Default_Sound',
-  //   );
-  // }
-
   @override
   void initState() {
     super.initState();
     createSevenDaysList();
     openDB();
-    // const AndroidInitializationSettings android =
-    //     AndroidInitializationSettings('@mipmap/ic_launcher');
-    // dynamic settings = const InitializationSettings(android: android);
-    // flip.initialize(settings);
     setState(() {});
   }
 
@@ -216,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
 
+            // return Container();
             return TaskSchedule(
               tasksCount: tasksCountToday,
               todos: todos,
