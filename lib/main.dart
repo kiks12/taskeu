@@ -61,13 +61,19 @@ void main() async {
 
     // If enabled it will post a notification whenever
     // the task is running. Handy for debugging tasks
-    isInDebugMode: true,
+    // isInDebugMode: true,
   );
   // Periodic task registration
   Workmanager().registerPeriodicTask(
     "1",
-    "simplePeriodicTask",
-    frequency: const Duration(minutes: 15),
+    "Notification",
+    frequency: const Duration(minutes: 45),
+    constraints: Constraints(
+      networkType: NetworkType.not_required,
+      requiresCharging: false,
+      requiresBatteryNotLow: false,
+      requiresDeviceIdle: false,
+    ),
   );
 
   // List<Todo> todos = await getNextTask();
@@ -79,6 +85,7 @@ void main() async {
   runApp(const MyApp());
 }
 
+@pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     List<Todo> tasks = await getNextTask();
