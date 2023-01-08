@@ -22,6 +22,15 @@ void main() async {
           AndroidFlutterLocalNotificationsPlugin>()!
       .requestPermission();
 
+  const AndroidInitializationSettings android =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  // // initialise settings for both Android and iOS device.
+  const InitializationSettings settings =
+      InitializationSettings(android: android);
+
+  flutterLocalNotificationsPlugin.initialize(settings);
+
   final database = openDatabase(
     join(
       await getDatabasesPath(),
@@ -37,7 +46,7 @@ void main() async {
           username TEXT
         );
       """);
-      print('Created User Table');
+      // print('Created User Table');
       await db.execute("""
         CREATE TABLE todo (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +58,7 @@ void main() async {
           status TEXT
         );
       """);
-      print('Created Todo Table');
+      // print('Created Todo Table');
       await db.close();
     },
     version: 1,
@@ -61,23 +70,22 @@ void main() async {
 
     // If enabled it will post a notification whenever
     // the task is running. Handy for debugging tasks
-    // isInDebugMode: true,
+    isInDebugMode: true,
   );
   // Periodic task registration
   Workmanager().registerPeriodicTask(
     "1",
-    "Notification",
-    frequency: const Duration(minutes: 45),
+    "Taskeu",
+    frequency: const Duration(minutes: 15),
     constraints: Constraints(
       networkType: NetworkType.not_required,
       requiresCharging: false,
       requiresBatteryNotLow: false,
-      requiresDeviceIdle: false,
+      requiresStorageNotLow: false,
     ),
   );
 
   // List<Todo> todos = await getNextTask();
-
   // for (Todo todo in todos) {
   //   showNotificationWithDefaultSound(flutterLocalNotificationsPlugin, todo);
   // }
@@ -91,14 +99,14 @@ void callbackDispatcher() {
     List<Todo> tasks = await getNextTask();
     // // app_icon needs to be a added as a drawable
     // // resource to the Android head project.
-    const AndroidInitializationSettings android =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    // const AndroidInitializationSettings android =
+    //     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // // initialise settings for both Android and iOS device.
-    const InitializationSettings settings =
-        InitializationSettings(android: android);
+    // // // initialise settings for both Android and iOS device.
+    // const InitializationSettings settings =
+    //     InitializationSettings(android: android);
 
-    flutterLocalNotificationsPlugin.initialize(settings);
+    // flutterLocalNotificationsPlugin.initialize(settings);
 
     for (Todo todo in tasks) {
       showNotificationWithDefaultSound(
@@ -112,6 +120,7 @@ void callbackDispatcher() {
   });
 }
 
+@pragma('vm:entry-point')
 Future<List<Todo>> getNextTask() async {
   DateTime dateToday = Date(date: DateTime.now()).date;
   TimeOfDay n = TimeOfDay.now();
@@ -123,11 +132,12 @@ Future<List<Todo>> getNextTask() async {
   }
   if (now.hour == -1) nowInt = 2400;
 
-  TimeOfDay oneHourAfterNow = now.replacing(hour: now.hour + 1);
+  TimeOfDay oneHourAfterNow = n.replacing(hour: n.hour + 1);
   int oneHourAfterNowInt =
       int.parse('${oneHourAfterNow.hour + 1}${oneHourAfterNow.minute}');
   if (oneHourAfterNow.minute.toString().length == 1) {
-    nowInt = int.parse('${now.hour}0${now.minute}');
+    oneHourAfterNowInt =
+        int.parse('${oneHourAfterNow.hour}0${oneHourAfterNow.minute}');
   }
   if (oneHourAfterNow.hour == 23) oneHourAfterNowInt = 2400;
 
@@ -155,10 +165,11 @@ Future<List<Todo>> getNextTask() async {
   return listOfTodo;
 }
 
+@pragma('vm:entry-point')
 Future showNotificationWithDefaultSound(flip, Todo task) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
-    '0',
+    '1',
     'Taskeu',
     importance: Importance.max,
     priority: Priority.high,
